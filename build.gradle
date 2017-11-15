@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'net.ltgt.apt' version '0.10'
+    id 'java-library'
+    id 'idea'
+}
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+group 'com.detoeuf'
+version '1.0-SNAPSHOT'
+sourceCompatibility = 9
+mainClassName = "com.detoeuf.bootstrap.Application"
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    junitJupiterVersion = '5.0.2'
+    logbackVersion = '1.2.3'
+    lombokVersion = '1.16.18'
+    daggerVersion = '2.13'
+}
+
+dependencies {
+    implementation 'io.vavr:vavr:0.9.1'
+
+    implementation "com.google.dagger:dagger:${daggerVersion}"
+    api "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+    // See https://github.com/rzwitserloot/lombok/issues/1472
+    api files('lib/lombok-edge.jar')
+
+    api "org.slf4j:slf4j-api:1.7.25"
+    implementation "ch.qos.logback:logback-core:${logbackVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    testImplementation 'org.assertj:assertj-core:3.8.0'
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
+}
