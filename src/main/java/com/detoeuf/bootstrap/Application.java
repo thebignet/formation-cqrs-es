@@ -12,6 +12,8 @@ public class Application {
         val userComponent = DaggerUserComponent.create();
         val userService = userComponent.userService();
         log.info("nom : " + userService.name());
+
+        userService.names().forEach(name -> log.info("having name " + name));
     }
 
 }
