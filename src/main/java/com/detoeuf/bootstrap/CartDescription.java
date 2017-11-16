@@ -7,7 +7,7 @@ import io.vavr.collection.Map;
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
-public class CartDescription {
+public class CartDescription implements Subscriber {
     private Map<Jewel, Integer> jewels;
 
     public CartDescription(Map<Jewel, Integer> jewels) {
