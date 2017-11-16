@@ -8,11 +8,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 public class CartTest {
+    /* Submit */
+
     @Test
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
         TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.empty(), eventPublisher);
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())), eventPublisher);
         //When
         cart.submit();
         //Then
@@ -25,7 +27,7 @@ public class CartTest {
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
         TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.of(new CartSubmittedEvent()), eventPublisher);
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel()), new CartSubmittedEvent()), eventPublisher);
         //When
         cart.submit();
         //Then
@@ -37,7 +39,7 @@ public class CartTest {
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
         TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.empty(), eventPublisher);
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())), eventPublisher);
         cart.submit();
         //When
         cart.submit();
@@ -46,6 +48,17 @@ public class CartTest {
         assertThat(events).hasSize(1);
         assertThat(events.head()).isInstanceOf(CartSubmittedEvent.class);
     }
+
+    @Test
+    void shouldNotRaiseEventWhenEmptyCartSubmitted() {
+        //Given
+        TestEventPublisher eventPublisher = new TestEventPublisher();
+        Cart cart = new Cart(List.empty(), eventPublisher);
+        //When
+        assertThatThrownBy(cart::submit).isInstanceOf(IllegalStateException.class);
+    }
+
+    /* Jewel */
 
     @Test
     void shouldRaiseEventWhenJewelAdded() {

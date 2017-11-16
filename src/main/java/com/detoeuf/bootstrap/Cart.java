@@ -8,41 +8,67 @@ import static io.vavr.Predicates.instanceOf;
 
 public class Cart {
     private final EventPublisher eventPublisher;
-    private boolean submitted;
-    private List<Jewel> jewels;
+    private CartState state;
 
     public Cart(List<Event> history, EventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
-        this.submitted = false;
-        this.jewels = List.empty();
-        history.forEach(this::apply);
+        this.state = history.foldLeft(CartState.initial(), CartState::apply);
     }
 
     public void submit() {
-        if (!submitted) {
+        if (state.jewels.isEmpty()) {
+            throw new IllegalStateException();
+        }
+        if (!state.submitted) {
             CartSubmittedEvent event = new CartSubmittedEvent();
             eventPublisher.publish(event);
-            apply(event);
+            state = state.apply(event);
         }
     }
 
-    private void apply(Event event) {
-        Match(event).of(
-                Case($(instanceOf(CartSubmittedEvent.class)), x -> submitted = true),
-                Case($(instanceOf(JewelAddedEvent.class)), x -> jewels = jewels.append(x.getJewel()))
-        );
-    }
-
     public void addJewel(Jewel jewel) {
-        if (submitted) {
+        if (state.submitted) {
             throw new IllegalStateException();
         }
         JewelAddedEvent event = new JewelAddedEvent(jewel);
         eventPublisher.publish(event);
-        apply(event);
+        state = state.apply(event);
     }
 
     public List<Jewel> listContent() {
-        return jewels;
+        return state.jewels;
     }
+
+    private static class CartState {
+        private final boolean submitted;
+        private final List<Jewel> jewels;
+
+        CartState(boolean submitted, List<Jewel> jewels) {
+            this.submitted = submitted;
+            this.jewels = jewels;
+        }
+
+        static CartState initial() {
+            return new CartState(false, List.empty());
+        }
+
+        private CartState apply(Event event) {
+            return Match(event).of(
+                    Case($(instanceOf(CartSubmittedEvent.class)), this::submitted),
+                    Case($(instanceOf(JewelAddedEvent.class)), this::addJewel)
+            );
+        }
+
+        private CartState submitted() {
+            return new CartState(true, jewels);
+        }
+
+
+        private CartState addJewel(JewelAddedEvent event) {
+            return new CartState(submitted, jewels.append(event.getJewel()));
+        }
+
+
+    }
+
 }
