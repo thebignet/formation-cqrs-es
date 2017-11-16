@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class CartTest {
-
     @Test
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
@@ -31,6 +30,20 @@ public class CartTest {
         //Then
         List<Event> events = eventPublisher.listPublishedEvents();
         assertThat(events).isEmpty();
+    }
+
+    @Test
+    void shouldNotRaiseEventWhenCartSubmittedTwice() {
+        //Given
+        TestEventPublisher eventPublisher = new TestEventPublisher();
+        Cart cart = new Cart(List.empty(), eventPublisher);
+        cart.submit();
+        //When
+        cart.submit();
+        //Then
+        List<Event> events = eventPublisher.listPublishedEvents();
+        assertThat(events).hasSize(1);
+        assertThat(events.head()).isInstanceOf(CartSubmittedEvent.class);
     }
 
 }
