@@ -7,32 +7,31 @@ import static io.vavr.Predicates.instanceOf;
 
 
 public class Cart {
-    private final EventPublisher eventPublisher;
     private CartState state;
 
-    public Cart(List<Event> history, EventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
+    public Cart(List<Event> history) {
         this.state = history.foldLeft(CartState.initial(), CartState::apply);
     }
 
-    public void submit() {
+    public List<Event> submit() {
         if (state.jewels.isEmpty()) {
             throw new IllegalStateException();
         }
         if (!state.submitted) {
             CartSubmittedEvent event = new CartSubmittedEvent();
-            eventPublisher.publish(event);
             state = state.apply(event);
+            return List.of(event);
         }
+        return List.empty();
     }
 
-    public void addJewel(Jewel jewel) {
+    public List<Event> addJewel(Jewel jewel) {
         if (state.submitted) {
             throw new IllegalStateException();
         }
         JewelAddedEvent event = new JewelAddedEvent(jewel);
-        eventPublisher.publish(event);
         state = state.apply(event);
+        return List.of(event);
     }
 
     public List<Jewel> listContent() {

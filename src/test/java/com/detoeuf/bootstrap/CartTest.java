@@ -13,12 +13,10 @@ public class CartTest {
     @Test
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())), eventPublisher);
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())));
         //When
-        cart.submit();
+        List<Event> events = cart.submit();
         //Then
-        List<Event> events = eventPublisher.listPublishedEvents();
         assertThat(events).hasSize(1);
         assertThat(events.head()).isInstanceOf(CartSubmittedEvent.class);
     }
@@ -26,34 +24,28 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel()), new CartSubmittedEvent()), eventPublisher);
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel()), new CartSubmittedEvent()));
         //When
-        cart.submit();
+        List<Event> events = cart.submit();
         //Then
-        List<Event> events = eventPublisher.listPublishedEvents();
         assertThat(events).isEmpty();
     }
 
     @Test
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())), eventPublisher);
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())));
         cart.submit();
         //When
-        cart.submit();
+        List<Event> events = cart.submit();
         //Then
-        List<Event> events = eventPublisher.listPublishedEvents();
-        assertThat(events).hasSize(1);
-        assertThat(events.head()).isInstanceOf(CartSubmittedEvent.class);
+        assertThat(events).isEmpty();
     }
 
     @Test
     void shouldNotRaiseEventWhenEmptyCartSubmitted() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.empty(), eventPublisher);
+        Cart cart = new Cart(List.empty());
         //When
         assertThatThrownBy(cart::submit).isInstanceOf(IllegalStateException.class);
     }
@@ -63,12 +55,10 @@ public class CartTest {
     @Test
     void shouldRaiseEventWhenJewelAdded() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.empty(), eventPublisher);
+        Cart cart = new Cart(List.empty());
         //When
-        cart.addJewel(new Jewel());
+        List<Event> events = cart.addJewel(new Jewel());
         //Then
-        List<Event> events = eventPublisher.listPublishedEvents();
         assertThat(events).hasSize(1);
         assertThat(events.head()).isInstanceOf(JewelAddedEvent.class);
     }
@@ -76,16 +66,14 @@ public class CartTest {
     @Test
     void shouldThrowWhenJewelAddedInSubmittedState() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.of(new CartSubmittedEvent()), eventPublisher);
+        Cart cart = new Cart(List.of(new CartSubmittedEvent()));
         assertThatThrownBy(() -> cart.addJewel(new Jewel())).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void shouldAddJewelToContentWhenJewelAdded() {
         //Given
-        TestEventPublisher eventPublisher = new TestEventPublisher();
-        Cart cart = new Cart(List.empty(), eventPublisher);
+        Cart cart = new Cart(List.empty());
         //When
         cart.addJewel(new Jewel());
         //Then
