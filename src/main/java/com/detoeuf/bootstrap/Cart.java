@@ -4,19 +4,23 @@ import io.vavr.collection.List;
 
 public class Cart {
     private final EventPublisher eventPublisher;
-    private final List<Event> history;
     private boolean submitted = false;
 
     public Cart(List<Event> history, EventPublisher eventPublisher) {
-        this.history = history;
         this.eventPublisher = eventPublisher;
-        this.submitted = !history.find(e -> e instanceof CartSubmittedEvent).isEmpty();
+        this.submitted = false;
+        history.forEach(this::apply);
     }
 
     public void submit() {
         if (!submitted) {
-            eventPublisher.publish(new CartSubmittedEvent());
-            submitted = true;
+            CartSubmittedEvent event = new CartSubmittedEvent();
+            eventPublisher.publish(event);
+            apply(event);
         }
+    }
+
+    private void apply(Event event) {
+        submitted |= event instanceof CartSubmittedEvent;
     }
 }
