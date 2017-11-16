@@ -2,6 +2,10 @@ package com.detoeuf.bootstrap;
 
 import io.vavr.collection.List;
 
+import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
+
+
 public class Cart {
     private final EventPublisher eventPublisher;
     private boolean submitted = false;
@@ -21,6 +25,8 @@ public class Cart {
     }
 
     private void apply(Event event) {
-        submitted |= event instanceof CartSubmittedEvent;
+        Match(event).of(
+                Case($(instanceOf(CartSubmittedEvent.class)), x -> submitted = true)
+        );
     }
 }
