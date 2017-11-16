@@ -13,7 +13,7 @@ public class CartTest {
     @Test
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())));
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel("a"))));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -24,7 +24,7 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel()), new CartSubmittedEvent()));
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel("a")), new CartSubmittedEvent()));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -34,7 +34,7 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel())));
+        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel("a"))));
         cart.submit();
         //When
         List<Event> events = cart.submit();
@@ -57,7 +57,7 @@ public class CartTest {
         //Given
         Cart cart = new Cart(List.empty());
         //When
-        List<Event> events = cart.addJewel(new Jewel());
+        List<Event> events = cart.addJewel(new Jewel("a"));
         //Then
         assertThat(events).hasSize(1);
         assertThat(events.head()).isInstanceOf(JewelAddedEvent.class);
@@ -67,7 +67,7 @@ public class CartTest {
     void shouldThrowWhenJewelAddedInSubmittedState() {
         //Given
         Cart cart = new Cart(List.of(new CartSubmittedEvent()));
-        assertThatThrownBy(() -> cart.addJewel(new Jewel())).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> cart.addJewel(new Jewel("a"))).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class CartTest {
         //Given
         Cart cart = new Cart(List.empty());
         //When
-        cart.addJewel(new Jewel());
+        cart.addJewel(new Jewel("a"));
         //Then
         assertThat(cart.listContent()).hasSize(1);
     }
