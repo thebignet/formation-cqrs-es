@@ -20,7 +20,7 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 
 group 'com.detoeuf'
 version '1.0-SNAPSHOT'
-sourceCompatibility = 9
+sourceCompatibility = 8
 mainClassName = "com.detoeuf.bootstrap.Application"
 
 repositories {

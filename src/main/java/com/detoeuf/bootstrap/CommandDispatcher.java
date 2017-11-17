@@ -13,7 +13,7 @@ public class CommandDispatcher {
 
 
     private final EventBus eventBus;
-    private Map<Class<Command>, Function<Command, List<Event>>> handlers;
+    private Map<Class, Function<Command, List<Event>>> handlers;
 
     public CommandDispatcher(EventBus eventBus) {
         this.eventBus = eventBus;
@@ -21,15 +21,13 @@ public class CommandDispatcher {
     }
 
     public <C extends Command> void register(Class<C> type, Function<C, List<Event>> commandHandler) {
-        Class<Command> castedType = (Class<Command>) type;
         Function<Command, List<Event>> castedHandler = (Function<Command, List<Event>>) commandHandler;
-        this.handlers = handlers.put(castedType, castedHandler);
+        this.handlers = handlers.put(type, castedHandler);
     }
 
     public void dispatch(Command c) {
-        Option<List<Event>> events = handlers
-                .get((Class<Command>) c.getClass())
-                .map(f -> f.apply(c));
+        Option<List<Event>> events = handlers.get(c.getClass())
+            .map(f -> f.apply(c));
         eventBus.publish(events.getOrElse(List.empty()));
     }
 }
