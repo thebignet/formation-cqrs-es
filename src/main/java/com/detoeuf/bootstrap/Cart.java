@@ -55,7 +55,7 @@ public class Cart {
     private static class CartState {
         private final boolean submitted;
         private final List<Jewel> jewels;
-        public final SequenceNumber sequenceNumber;
+        private final SequenceNumber sequenceNumber;
 
         CartState(SequenceNumber sequenceNumber, boolean submitted, List<Jewel> jewels) {
             this.sequenceNumber = sequenceNumber;
