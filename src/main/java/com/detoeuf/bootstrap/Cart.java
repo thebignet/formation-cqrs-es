@@ -2,15 +2,27 @@ package com.detoeuf.bootstrap;
 
 import io.vavr.collection.List;
 
+import java.util.UUID;
+
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 
 public class Cart {
+    private final UUID id;
     private CartState state;
 
-    public Cart(List<Event> history) {
+    private Cart(UUID id, List<Event> history) {
+        this.id = id;
         this.state = history.foldLeft(CartState.initial(), CartState::apply);
+    }
+
+    public static Cart pickup() {
+        return new Cart(UUID.randomUUID(), List.empty());
+    }
+
+    public static Cart fromEvents(UUID id, List<Event> history) {
+        return new Cart(id, history);
     }
 
     public List<Event> submit() {

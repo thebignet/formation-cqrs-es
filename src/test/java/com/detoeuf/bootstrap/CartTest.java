@@ -3,6 +3,8 @@ package com.detoeuf.bootstrap;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -13,7 +15,7 @@ public class CartTest {
     @Test
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel("a"))));
+        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new JewelAddedEvent(new Jewel("a"))));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -24,7 +26,7 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel("a")), new CartSubmittedEvent()));
+        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new JewelAddedEvent(new Jewel("a")), new CartSubmittedEvent()));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -34,7 +36,7 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
-        Cart cart = new Cart(List.of(new JewelAddedEvent(new Jewel("a"))));
+        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new JewelAddedEvent(new Jewel("a"))));
         cart.submit();
         //When
         List<Event> events = cart.submit();
@@ -45,7 +47,7 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenEmptyCartSubmitted() {
         //Given
-        Cart cart = new Cart(List.empty());
+        Cart cart = Cart.pickup();
         //When
         assertThatThrownBy(cart::submit).isInstanceOf(IllegalStateException.class);
     }
@@ -55,7 +57,7 @@ public class CartTest {
     @Test
     void shouldRaiseEventWhenJewelAdded() {
         //Given
-        Cart cart = new Cart(List.empty());
+        Cart cart = Cart.pickup();
         //When
         List<Event> events = cart.addJewel(new Jewel("a"));
         //Then
@@ -66,14 +68,14 @@ public class CartTest {
     @Test
     void shouldThrowWhenJewelAddedInSubmittedState() {
         //Given
-        Cart cart = new Cart(List.of(new CartSubmittedEvent()));
+        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new CartSubmittedEvent()));
         assertThatThrownBy(() -> cart.addJewel(new Jewel("a"))).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
     void shouldAddJewelToContentWhenJewelAdded() {
         //Given
-        Cart cart = new Cart(List.empty());
+        Cart cart = Cart.pickup();
         //When
         cart.addJewel(new Jewel("a"));
         //Then
