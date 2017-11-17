@@ -12,4 +12,12 @@ public class AggregateId {
     public static AggregateId generate() {
         return new AggregateId(UUID.randomUUID());
     }
+
+    public String serialize() {
+        return uuid.toString();
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
 }

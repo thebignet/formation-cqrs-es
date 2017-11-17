@@ -12,7 +12,7 @@ public class InMemoryEventStore implements EventStore {
     }
 
     @Override
-    public List<Event> getAll() {
+    public List<Event> getEventsOfAggregate(AggregateId aggregateId) {
         return events;
     }
 }

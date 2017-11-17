@@ -30,14 +30,20 @@ repositories {
 ext {
     junitJupiterVersion = '5.0.2'
     logbackVersion = '1.2.3'
+    vavrVersion = '0.9.1'
 }
 
 dependencies {
-    implementation 'io.vavr:vavr:0.9.1'
+    implementation "io.vavr:vavr:${vavrVersion}"
+    implementation "io.vavr:vavr-jackson:${vavrVersion}"
 
     api "org.slf4j:slf4j-api:1.7.25"
     implementation "ch.qos.logback:logback-core:${logbackVersion}"
     implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation 'commons-io:commons-io:2.5'
+
 
     testImplementation 'org.assertj:assertj-core:3.8.0'
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
