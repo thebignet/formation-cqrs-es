@@ -13,7 +13,7 @@ class CartDescriptionTest {
         //Given
         CartDescription cartDescription = new CartDescription();
         //When
-        cartDescription.handle(new JewelAddedEvent(new Jewel("a")));
+        cartDescription.handle(new JewelAddedEvent(AggregateId.generate(), new Jewel("a")));
         //Then
         assertThat(cartDescription.getContent()).contains(Tuple(new Jewel("a"), 1));
     }
@@ -23,7 +23,7 @@ class CartDescriptionTest {
         //Given
         CartDescription cartDescription = new CartDescription(Map(new Jewel("a"), 1));
         //When
-        cartDescription.handle(new JewelRemovedEvent(new Jewel("a")));
+        cartDescription.handle(new JewelRemovedEvent(AggregateId.generate(), new Jewel("a")));
         //Then
         assertThat(cartDescription.getContent()).isEmpty();
     }

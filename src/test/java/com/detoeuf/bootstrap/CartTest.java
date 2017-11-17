@@ -3,8 +3,6 @@ package com.detoeuf.bootstrap;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -15,7 +13,8 @@ public class CartTest {
     @Test
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
-        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new JewelAddedEvent(new Jewel("a"))));
+        AggregateId aggregateId = AggregateId.generate();
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"))));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -26,7 +25,8 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
-        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new JewelAddedEvent(new Jewel("a")), new CartSubmittedEvent()));
+        AggregateId aggregateId = AggregateId.generate();
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a")), new CartSubmittedEvent(aggregateId)));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -36,7 +36,8 @@ public class CartTest {
     @Test
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
-        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new JewelAddedEvent(new Jewel("a"))));
+        AggregateId aggregateId = AggregateId.generate();
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"))));
         cart.submit();
         //When
         List<Event> events = cart.submit();
@@ -68,7 +69,8 @@ public class CartTest {
     @Test
     void shouldThrowWhenJewelAddedInSubmittedState() {
         //Given
-        Cart cart = Cart.fromEvents(UUID.randomUUID(), List.of(new CartSubmittedEvent()));
+        AggregateId aggregateId = AggregateId.generate();
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new CartSubmittedEvent(aggregateId)));
         assertThatThrownBy(() -> cart.addJewel(new Jewel("a"))).isInstanceOf(IllegalStateException.class);
     }
 

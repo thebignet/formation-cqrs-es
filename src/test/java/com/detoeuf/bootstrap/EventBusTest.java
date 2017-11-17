@@ -11,19 +11,19 @@ public class EventBusTest {
     @Test
     void shouldStoreEventWhenJewelAddedToCart() {
         //Given
-        EventStore eventStore = new EventStore();
+        EventStore eventStore = new InMemoryEventStore();
         EventBus eventBus = new EventBus(eventStore);
         Cart cart = Cart.pickup();
         //When
         eventBus.publish(cart.addJewel(new Jewel("a")));
         //Then
-        assertThat(eventStore.getAll()).containsExactly(new JewelAddedEvent(new Jewel("a")));
+        assertThat(eventStore.getAll()).containsExactly(new JewelAddedEvent(cart.getAggregateId(), new Jewel("a")));
     }
 
     @Test
     void shouldCallHandlersToUpdateCartDescriptionWhenJewelAddedToCart() {
         //Given
-        EventStore eventStore = new EventStore();
+        EventStore eventStore = new InMemoryEventStore();
         EventBus eventBus = new EventBus(eventStore);
         CartDescription cartDescription = new CartDescription();
         eventBus.subscribe(cartDescription);
@@ -37,7 +37,7 @@ public class EventBusTest {
     @Test
     void shouldUpdateCartDescriptionWhenJewelAddedToCart() {
         //Given
-        EventStore eventStore = new EventStore();
+        EventStore eventStore = new InMemoryEventStore();
         EventBus eventBus = new EventBus(eventStore);
         CartDescription cartDescription = new CartDescription();
         eventBus.subscribe(cartDescription);

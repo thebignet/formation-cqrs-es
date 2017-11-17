@@ -2,15 +2,8 @@ package com.detoeuf.bootstrap;
 
 import io.vavr.collection.List;
 
-public class EventStore {
+public interface EventStore {
+    void appendAll(List<Event> events);
 
-    private List<Event> events = List.empty();
-
-    public void appendAll(List<Event> events) {
-        this.events = this.events.appendAll(events);
-    }
-
-    public List<Event> getAll() {
-        return events;
-    }
+    List<Event> getAll();
 }

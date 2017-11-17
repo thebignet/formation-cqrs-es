@@ -2,27 +2,29 @@ package com.detoeuf.bootstrap;
 
 import io.vavr.collection.List;
 
-import java.util.UUID;
-
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
 
 
 public class Cart {
-    private final UUID id;
+    private final AggregateId aggregateId;
     private CartState state;
 
-    private Cart(UUID id, List<Event> history) {
-        this.id = id;
+    private Cart(AggregateId aggregateId, List<Event> history) {
+        this.aggregateId = aggregateId;
         this.state = history.foldLeft(CartState.initial(), CartState::apply);
     }
 
     public static Cart pickup() {
-        return new Cart(UUID.randomUUID(), List.empty());
+        return new Cart(AggregateId.generate(), List.empty());
     }
 
-    public static Cart fromEvents(UUID id, List<Event> history) {
-        return new Cart(id, history);
+    public static Cart fromEvents(AggregateId aggregateId, List<Event> history) {
+        return new Cart(aggregateId, history);
+    }
+
+    public AggregateId getAggregateId() {
+        return aggregateId;
     }
 
     public List<Event> submit() {
@@ -30,7 +32,7 @@ public class Cart {
             throw new IllegalStateException();
         }
         if (!state.submitted) {
-            CartSubmittedEvent event = new CartSubmittedEvent();
+            CartSubmittedEvent event = new CartSubmittedEvent(aggregateId);
             state = state.apply(event);
             return List.of(event);
         }
@@ -41,7 +43,7 @@ public class Cart {
         if (state.submitted) {
             throw new IllegalStateException();
         }
-        JewelAddedEvent event = new JewelAddedEvent(jewel);
+        JewelAddedEvent event = new JewelAddedEvent(aggregateId, jewel);
         state = state.apply(event);
         return List.of(event);
     }
