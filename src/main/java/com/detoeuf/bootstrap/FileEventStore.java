@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 
 public class FileEventStore implements EventStore {
@@ -32,7 +33,18 @@ public class FileEventStore implements EventStore {
     @Override
     public void appendAll(List<Event> events) {
         events.map(event -> Tuple.of(getFileNameFromAggregateId(event.getAggregateId()), event))
-                .forEach(handleAndEvent -> serialize(handleAndEvent._1, handleAndEvent._2));
+                .forEach(handleAndEvent -> {
+                    Integer lastKnownId = getEventsOfAggregate(handleAndEvent._2.getAggregateId())
+                            .lastOption()
+                            .map(Event::getSequenceNumber)
+                            .getOrElse(0);
+
+                    if (lastKnownId + 1 == handleAndEvent._2.getSequenceNumber()) {
+                        serialize(handleAndEvent._1, handleAndEvent._2);
+                    } else {
+                        throw new IllegalStateException();
+                    }
+                });
     }
 
     private File getFileNameFromAggregateId(AggregateId aggregateId) {
@@ -54,6 +66,8 @@ public class FileEventStore implements EventStore {
         try {
             return List.ofAll(Files.lines(Paths.get(fileName.toString())))
                     .map(this::deserialize);
+        } catch (NoSuchFileException e) {
+            return List.empty();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

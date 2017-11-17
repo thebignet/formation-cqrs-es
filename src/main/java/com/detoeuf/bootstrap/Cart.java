@@ -32,7 +32,7 @@ public class Cart {
             throw new IllegalStateException();
         }
         if (!state.submitted) {
-            CartSubmittedEvent event = new CartSubmittedEvent(aggregateId);
+            CartSubmittedEvent event = new CartSubmittedEvent(aggregateId, state.sequenceNumber + 1);
             state = state.apply(event);
             return List.of(event);
         }
@@ -43,7 +43,7 @@ public class Cart {
         if (state.submitted) {
             throw new IllegalStateException();
         }
-        JewelAddedEvent event = new JewelAddedEvent(aggregateId, jewel);
+        JewelAddedEvent event = new JewelAddedEvent(aggregateId, jewel, state.sequenceNumber + 1);
         state = state.apply(event);
         return List.of(event);
     }
@@ -55,14 +55,16 @@ public class Cart {
     private static class CartState {
         private final boolean submitted;
         private final List<Jewel> jewels;
+        public final int sequenceNumber;
 
-        CartState(boolean submitted, List<Jewel> jewels) {
+        CartState(int sequenceNumber, boolean submitted, List<Jewel> jewels) {
+            this.sequenceNumber = sequenceNumber;
             this.submitted = submitted;
             this.jewels = jewels;
         }
 
         static CartState initial() {
-            return new CartState(false, List.empty());
+            return new CartState(0, false, List.empty());
         }
 
         private CartState apply(Event event) {
@@ -72,13 +74,13 @@ public class Cart {
             );
         }
 
-        private CartState submitted() {
-            return new CartState(true, jewels);
+        private CartState submitted(CartSubmittedEvent event) {
+            return new CartState(event.getSequenceNumber(), true, jewels);
         }
 
 
         private CartState addJewel(JewelAddedEvent event) {
-            return new CartState(submitted, jewels.append(event.getJewel()));
+            return new CartState(event.getSequenceNumber(), submitted, jewels.append(event.getJewel()));
         }
 
 

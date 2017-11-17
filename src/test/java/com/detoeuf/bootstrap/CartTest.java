@@ -14,7 +14,7 @@ public class CartTest {
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"))));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), 1)));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -26,7 +26,7 @@ public class CartTest {
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a")), new CartSubmittedEvent(aggregateId)));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), 1), new CartSubmittedEvent(aggregateId, 1)));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -37,7 +37,7 @@ public class CartTest {
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"))));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), 1)));
         cart.submit();
         //When
         List<Event> events = cart.submit();
@@ -70,7 +70,7 @@ public class CartTest {
     void shouldThrowWhenJewelAddedInSubmittedState() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new CartSubmittedEvent(aggregateId)));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new CartSubmittedEvent(aggregateId, 1)));
         assertThatThrownBy(() -> cart.addJewel(new Jewel("a"))).isInstanceOf(IllegalStateException.class);
     }
 

@@ -9,11 +9,13 @@ public class JewelAddedEvent implements Event {
 
     private final AggregateId aggregateId;
     private final Jewel jewel;
+    private final int sequenceNumber;
 
     @JsonCreator
-    public JewelAddedEvent(@JsonProperty("aggregateId") AggregateId aggregateId, @JsonProperty("jewel") Jewel jewel) {
+    public JewelAddedEvent(@JsonProperty("aggregateId") AggregateId aggregateId, @JsonProperty("jewel") Jewel jewel, @JsonProperty("sequenceNumber") int sequenceNumber) {
         this.jewel = jewel;
         this.aggregateId = aggregateId;
+        this.sequenceNumber = sequenceNumber;
     }
 
     public Jewel getJewel() {
@@ -23,6 +25,11 @@ public class JewelAddedEvent implements Event {
     @Override
     public AggregateId getAggregateId() {
         return aggregateId;
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return sequenceNumber;
     }
 
     @Override

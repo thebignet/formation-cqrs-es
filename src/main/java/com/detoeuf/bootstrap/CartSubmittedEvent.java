@@ -7,15 +7,22 @@ import java.util.Objects;
 
 public class CartSubmittedEvent implements Event {
     private final AggregateId aggregateId;
+    private final int sequenceNumber;
 
     @JsonCreator
-    public CartSubmittedEvent(@JsonProperty("aggregateId") AggregateId aggregateId) {
+    public CartSubmittedEvent(@JsonProperty("aggregateId") AggregateId aggregateId, @JsonProperty("sequenceNumber") int sequenceNumber) {
         this.aggregateId = aggregateId;
+        this.sequenceNumber = sequenceNumber;
     }
 
     @Override
     public AggregateId getAggregateId() {
         return aggregateId;
+    }
+
+    @Override
+    public int getSequenceNumber() {
+        return sequenceNumber;
     }
 
     @Override

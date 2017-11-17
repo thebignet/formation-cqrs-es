@@ -2,6 +2,7 @@ package com.detoeuf.bootstrap;
 
 import com.detoeuf.bootstrap.command.AddJewelToCart;
 import io.vavr.Tuple;
+import io.vavr.collection.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class EventBusTest {
     private File temporaryFolder;
@@ -38,11 +40,11 @@ public class EventBusTest {
         //When
         eventBus.publish(cart.addJewel(new Jewel("a")));
         //Then
-        assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(new JewelAddedEvent(cart.getAggregateId(), new Jewel("a")));
+        assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(new JewelAddedEvent(cart.getAggregateId(), new Jewel("a"), 1));
     }
 
     @Test
-    void shouldStoreEvenstWhenJewelAddedToCartAndSubmitted() {
+    void shouldStoreEventsWhenJewelAddedToCartAndSubmitted() {
         //Given
         EventStore eventStore = new FileEventStore(temporaryFolder);
         EventBus eventBus = new EventBus(eventStore);
@@ -52,9 +54,21 @@ public class EventBusTest {
         eventBus.publish(cart.submit());
         //Then
         assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(
-                new JewelAddedEvent(cart.getAggregateId(), new Jewel("a")),
-                new CartSubmittedEvent(cart.getAggregateId())
+                new JewelAddedEvent(cart.getAggregateId(), new Jewel("a"), 1),
+                new CartSubmittedEvent(cart.getAggregateId(), 2)
         );
+    }
+
+    @Test
+    void shouldNotApplySameCommandOnTheSameCart() {
+        //Given
+        EventStore eventStore = new FileEventStore(temporaryFolder);
+        EventBus eventBus = new EventBus(eventStore);
+        Cart cartA = Cart.pickup();
+        Cart cartB = Cart.fromEvents(cartA.getAggregateId(), List.empty());
+        //When
+        eventBus.publish(cartA.addJewel(new Jewel("a")));
+        assertThatThrownBy(() -> eventBus.publish(cartB.addJewel(new Jewel("a")))).isInstanceOf(IllegalStateException.class);
     }
 
     @Test
