@@ -1,12 +1,13 @@
 package com.detoeuf.bootstrap;
 
-import java.util.function.Function;
-
 import com.detoeuf.bootstrap.command.Command;
 import io.vavr.collection.List;
-import static io.vavr.API.*;
 import io.vavr.collection.Map;
 import io.vavr.control.Option;
+
+import java.util.function.Function;
+
+import static io.vavr.API.Map;
 
 public class CommandDispatcher {
 
@@ -26,8 +27,9 @@ public class CommandDispatcher {
     }
 
     public void dispatch(Command c) {
-        Option<List<Event>> events = handlers.get((Class<Command>) c.getClass())
-            .map(f -> f.apply(c));
+        Option<List<Event>> events = handlers
+                .get((Class<Command>) c.getClass())
+                .map(f -> f.apply(c));
         eventBus.publish(events.getOrElse(List.empty()));
     }
 }

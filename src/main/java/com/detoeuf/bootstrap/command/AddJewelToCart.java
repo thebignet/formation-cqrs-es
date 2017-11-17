@@ -9,4 +9,8 @@ public class AddJewelToCart implements Command {
     public AddJewelToCart(Jewel jewel) {
         this.jewel = jewel;
     }
+
+    public Jewel getJewel() {
+        return jewel;
+    }
 }

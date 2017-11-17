@@ -1,5 +1,6 @@
 package com.detoeuf.bootstrap;
 
+import com.detoeuf.bootstrap.command.AddJewelToCart;
 import io.vavr.Tuple;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
@@ -42,9 +43,10 @@ public class EventBusTest {
         CartDescription cartDescription = new CartDescription();
         eventBus.subscribe(cartDescription);
         Cart cart = new Cart(List.empty());
-        EventDispatcher eventDispatcher = new EventDispatcher(eventBus);
+        CommandDispatcher commandDispatcher = new CommandDispatcher(eventBus);
+        commandDispatcher.register(AddJewelToCart.class, command -> cart.addJewel(command.getJewel()));
         //When
-        eventDispatcher.dispatch(cart.addJewel(new Jewel("a")));
+        commandDispatcher.dispatch(new AddJewelToCart(new Jewel("a")));
         //Then
         assertThat(cartDescription.getContent()).containsExactly(Tuple.of(new Jewel("a"), 1));
     }
