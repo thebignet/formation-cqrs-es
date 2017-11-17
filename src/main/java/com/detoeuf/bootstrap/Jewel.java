@@ -1,11 +1,15 @@
 package com.detoeuf.bootstrap;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class Jewel {
     private final String id;
 
-    public Jewel(String id) {
+    @JsonCreator
+    public Jewel(@JsonProperty("id") String id) {
         this.id = id;
     }
 
@@ -24,5 +28,12 @@ public class Jewel {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Jewel{" +
+                "id='" + id + '\'' +
+                '}';
     }
 }

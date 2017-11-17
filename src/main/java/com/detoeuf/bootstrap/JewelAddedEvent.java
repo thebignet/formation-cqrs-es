@@ -1,5 +1,8 @@
 package com.detoeuf.bootstrap;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 
 public class JewelAddedEvent implements Event {
@@ -7,7 +10,8 @@ public class JewelAddedEvent implements Event {
     private final AggregateId aggregateId;
     private final Jewel jewel;
 
-    public JewelAddedEvent(AggregateId aggregateId, Jewel jewel) {
+    @JsonCreator
+    public JewelAddedEvent(@JsonProperty("aggregateId") AggregateId aggregateId, @JsonProperty("jewel") Jewel jewel) {
         this.jewel = jewel;
         this.aggregateId = aggregateId;
     }
@@ -33,5 +37,13 @@ public class JewelAddedEvent implements Event {
     @Override
     public int hashCode() {
         return Objects.hash(aggregateId, jewel);
+    }
+
+    @Override
+    public String toString() {
+        return "JewelAddedEvent{" +
+                "aggregateId=" + aggregateId +
+                ", jewel=" + jewel +
+                '}';
     }
 }
