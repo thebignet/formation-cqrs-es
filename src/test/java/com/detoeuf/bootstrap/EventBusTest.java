@@ -42,6 +42,22 @@ public class EventBusTest {
     }
 
     @Test
+    void shouldStoreEvenstWhenJewelAddedToCartAndSubmitted() {
+        //Given
+        EventStore eventStore = new FileEventStore(temporaryFolder);
+        EventBus eventBus = new EventBus(eventStore);
+        Cart cart = Cart.pickup();
+        //When
+        eventBus.publish(cart.addJewel(new Jewel("a")));
+        eventBus.publish(cart.submit());
+        //Then
+        assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(
+                new JewelAddedEvent(cart.getAggregateId(), new Jewel("a")),
+                new CartSubmittedEvent(cart.getAggregateId())
+        );
+    }
+
+    @Test
     void shouldCallHandlersToUpdateCartDescriptionWhenJewelAddedToCart() {
         //Given
         EventStore eventStore = new FileEventStore(temporaryFolder);
