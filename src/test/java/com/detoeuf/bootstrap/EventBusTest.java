@@ -20,7 +20,6 @@ public class EventBusTest {
 
     @BeforeEach
     public void createFolder(){
-
         File temporaryFolder = new File("./"+ UUID.randomUUID());
         temporaryFolder.mkdir();
         this.temporaryFolder = temporaryFolder;
