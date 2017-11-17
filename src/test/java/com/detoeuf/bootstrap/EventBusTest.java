@@ -21,7 +21,7 @@ public class EventBusTest {
     }
 
     @Test
-    void shouldUpdateCartDescriptionWhenJewelAddedToCart() {
+    void shouldCallHandlersToUpdateCartDescriptionWhenJewelAddedToCart() {
         //Given
         EventStore eventStore = new EventStore();
         EventBus eventBus = new EventBus(eventStore);
@@ -35,7 +35,7 @@ public class EventBusTest {
     }
 
     @Test
-    void shouldUpdateCartDescriptionWhenCartSubmitted() {
+    void shouldUpdateCartDescriptionWhenJewelAddedToCart() {
         //Given
         EventStore eventStore = new EventStore();
         EventBus eventBus = new EventBus(eventStore);
