@@ -34,17 +34,21 @@ public class FileEventStore implements EventStore {
     public void appendAll(List<Event> events) {
         events.map(event -> Tuple.of(getFileNameFromAggregateId(event.getAggregateId()), event))
                 .forEach(handleAndEvent -> {
-                    Integer lastKnownId = getEventsOfAggregate(handleAndEvent._2.getAggregateId())
-                            .lastOption()
-                            .map(Event::getSequenceNumber)
-                            .getOrElse(0);
-
-                    if (lastKnownId + 1 == handleAndEvent._2.getSequenceNumber()) {
+                    AggregateId aggregateId = handleAndEvent._2.getAggregateId();
+                    int sequenceNumber = handleAndEvent._2.getSequenceNumber();
+                    if (lastKnownSequenceNumber(aggregateId) + 1 == sequenceNumber) {
                         serialize(handleAndEvent._1, handleAndEvent._2);
                     } else {
                         throw new IllegalStateException();
                     }
                 });
+    }
+
+    private Integer lastKnownSequenceNumber(AggregateId aggregateId) {
+        return getEventsOfAggregate(aggregateId)
+                .lastOption()
+                .map(Event::getSequenceNumber)
+                .getOrElse(0);
     }
 
     private File getFileNameFromAggregateId(AggregateId aggregateId) {
