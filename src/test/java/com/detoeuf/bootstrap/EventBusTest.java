@@ -33,4 +33,19 @@ public class EventBusTest {
         //Then
         assertThat(cartDescription.getContent()).containsExactly(Tuple.of(new Jewel("a"), 1));
     }
+
+    @Test
+    void shouldUpdateCartDescriptionWhenCartSubmitted() {
+        //Given
+        EventStore eventStore = new EventStore();
+        EventBus eventBus = new EventBus(eventStore);
+        CartDescription cartDescription = new CartDescription();
+        eventBus.subscribe(cartDescription);
+        Cart cart = new Cart(List.empty());
+        EventDispatcher eventDispatcher = new EventDispatcher(eventBus);
+        //When
+        eventDispatcher.dispatch(cart.addJewel(new Jewel("a")));
+        //Then
+        assertThat(cartDescription.getContent()).containsExactly(Tuple.of(new Jewel("a"), 1));
+    }
 }
