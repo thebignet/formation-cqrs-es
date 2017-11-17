@@ -13,7 +13,6 @@ buildscript {
 plugins {
     id 'java'
     id 'application'
-    id 'net.ltgt.apt' version '0.10'
     id 'java-library'
     id 'idea'
 }
@@ -31,18 +30,10 @@ repositories {
 ext {
     junitJupiterVersion = '5.0.2'
     logbackVersion = '1.2.3'
-    lombokVersion = '1.16.18'
-    daggerVersion = '2.13'
 }
 
 dependencies {
     implementation 'io.vavr:vavr:0.9.1'
-
-    implementation "com.google.dagger:dagger:${daggerVersion}"
-    api "com.google.dagger:dagger-compiler:${daggerVersion}"
-
-    // See https://github.com/rzwitserloot/lombok/issues/1472
-    api files('lib/lombok-edge.jar')
 
     api "org.slf4j:slf4j-api:1.7.25"
     implementation "ch.qos.logback:logback-core:${logbackVersion}"
