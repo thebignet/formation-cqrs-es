@@ -3,6 +3,7 @@ package com.detoeuf.bootstrap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.jackson.datatype.VavrModule;
 
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+import java.util.function.Consumer;
 
 public class FileEventStore implements EventStore {
     public static final boolean APPEND = true;
@@ -33,15 +35,19 @@ public class FileEventStore implements EventStore {
     @Override
     public void appendAll(List<Event> events) {
         events.map(event -> Tuple.of(getFileNameFromAggregateId(event.getAggregateId()), event))
-                .forEach(handleAndEvent -> {
-                    AggregateId aggregateId = handleAndEvent._2.getAggregateId();
-                    SequenceNumber sequenceNumber = handleAndEvent._2.getSequenceNumber();
-                    if (lastKnownSequenceNumber(aggregateId).isNext(sequenceNumber)) {
-                        serialize(handleAndEvent._1, handleAndEvent._2);
-                    } else {
-                        throw new IllegalStateException();
-                    }
-                });
+                .forEach(tryToSerialize());
+    }
+
+    private Consumer<Tuple2<File, Event>> tryToSerialize() {
+        return handleAndEvent -> {
+            AggregateId aggregateId = handleAndEvent._2.getAggregateId();
+            SequenceNumber sequenceNumber = handleAndEvent._2.getSequenceNumber();
+            if (lastKnownSequenceNumber(aggregateId).isNext(sequenceNumber)) {
+                serialize(handleAndEvent._1, handleAndEvent._2);
+            } else {
+                throw new IllegalStateException();
+            }
+        };
     }
 
     private SequenceNumber lastKnownSequenceNumber(AggregateId aggregateId) {
