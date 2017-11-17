@@ -14,7 +14,7 @@ public class CartTest {
     void shouldRaiseCartSubmittedWhenSubmit() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), 1)));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), SequenceNumber.initial().next())));
         //When
         List<Event> events = cart.submit();
         //Then
@@ -26,7 +26,10 @@ public class CartTest {
     void shouldNotRaiseEventWhenCartAlreadySubmitted() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), 1), new CartSubmittedEvent(aggregateId, 1)));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(
+                new JewelAddedEvent(aggregateId, new Jewel("a"), SequenceNumber.initial().next()),
+                new CartSubmittedEvent(aggregateId, SequenceNumber.initial().next()))
+        );
         //When
         List<Event> events = cart.submit();
         //Then
@@ -37,7 +40,7 @@ public class CartTest {
     void shouldNotRaiseEventWhenCartSubmittedTwice() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), 1)));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new JewelAddedEvent(aggregateId, new Jewel("a"), SequenceNumber.initial().next())));
         cart.submit();
         //When
         List<Event> events = cart.submit();
@@ -70,7 +73,7 @@ public class CartTest {
     void shouldThrowWhenJewelAddedInSubmittedState() {
         //Given
         AggregateId aggregateId = AggregateId.generate();
-        Cart cart = Cart.fromEvents(aggregateId, List.of(new CartSubmittedEvent(aggregateId, 1)));
+        Cart cart = Cart.fromEvents(aggregateId, List.of(new CartSubmittedEvent(aggregateId, SequenceNumber.initial().next())));
         assertThatThrownBy(() -> cart.addJewel(new Jewel("a"))).isInstanceOf(IllegalStateException.class);
     }
 

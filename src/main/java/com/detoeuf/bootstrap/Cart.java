@@ -32,7 +32,7 @@ public class Cart {
             throw new IllegalStateException();
         }
         if (!state.submitted) {
-            CartSubmittedEvent event = new CartSubmittedEvent(aggregateId, state.sequenceNumber + 1);
+            CartSubmittedEvent event = new CartSubmittedEvent(aggregateId, state.sequenceNumber.next());
             state = state.apply(event);
             return List.of(event);
         }
@@ -43,7 +43,7 @@ public class Cart {
         if (state.submitted) {
             throw new IllegalStateException();
         }
-        JewelAddedEvent event = new JewelAddedEvent(aggregateId, jewel, state.sequenceNumber + 1);
+        JewelAddedEvent event = new JewelAddedEvent(aggregateId, jewel, state.sequenceNumber.next());
         state = state.apply(event);
         return List.of(event);
     }
@@ -55,16 +55,16 @@ public class Cart {
     private static class CartState {
         private final boolean submitted;
         private final List<Jewel> jewels;
-        public final int sequenceNumber;
+        public final SequenceNumber sequenceNumber;
 
-        CartState(int sequenceNumber, boolean submitted, List<Jewel> jewels) {
+        CartState(SequenceNumber sequenceNumber, boolean submitted, List<Jewel> jewels) {
             this.sequenceNumber = sequenceNumber;
             this.submitted = submitted;
             this.jewels = jewels;
         }
 
         static CartState initial() {
-            return new CartState(0, false, List.empty());
+            return new CartState(SequenceNumber.initial(), false, List.empty());
         }
 
         private CartState apply(Event event) {

@@ -35,8 +35,8 @@ public class FileEventStore implements EventStore {
         events.map(event -> Tuple.of(getFileNameFromAggregateId(event.getAggregateId()), event))
                 .forEach(handleAndEvent -> {
                     AggregateId aggregateId = handleAndEvent._2.getAggregateId();
-                    int sequenceNumber = handleAndEvent._2.getSequenceNumber();
-                    if (lastKnownSequenceNumber(aggregateId) + 1 == sequenceNumber) {
+                    SequenceNumber sequenceNumber = handleAndEvent._2.getSequenceNumber();
+                    if (lastKnownSequenceNumber(aggregateId).isNext(sequenceNumber)) {
                         serialize(handleAndEvent._1, handleAndEvent._2);
                     } else {
                         throw new IllegalStateException();
@@ -44,11 +44,11 @@ public class FileEventStore implements EventStore {
                 });
     }
 
-    private Integer lastKnownSequenceNumber(AggregateId aggregateId) {
+    private SequenceNumber lastKnownSequenceNumber(AggregateId aggregateId) {
         return getEventsOfAggregate(aggregateId)
                 .lastOption()
                 .map(Event::getSequenceNumber)
-                .getOrElse(0);
+                .getOrElse(SequenceNumber.initial());
     }
 
     private File getFileNameFromAggregateId(AggregateId aggregateId) {

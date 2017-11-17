@@ -7,10 +7,10 @@ import java.util.Objects;
 
 public class CartSubmittedEvent implements Event {
     private final AggregateId aggregateId;
-    private final int sequenceNumber;
+    private final SequenceNumber sequenceNumber;
 
     @JsonCreator
-    public CartSubmittedEvent(@JsonProperty("aggregateId") AggregateId aggregateId, @JsonProperty("sequenceNumber") int sequenceNumber) {
+    public CartSubmittedEvent(@JsonProperty("aggregateId") AggregateId aggregateId, @JsonProperty("sequenceNumber") SequenceNumber sequenceNumber) {
         this.aggregateId = aggregateId;
         this.sequenceNumber = sequenceNumber;
     }
@@ -21,7 +21,7 @@ public class CartSubmittedEvent implements Event {
     }
 
     @Override
-    public int getSequenceNumber() {
+    public SequenceNumber getSequenceNumber() {
         return sequenceNumber;
     }
 

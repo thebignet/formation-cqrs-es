@@ -40,7 +40,7 @@ public class EventBusTest {
         //When
         eventBus.publish(cart.addJewel(new Jewel("a")));
         //Then
-        assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(new JewelAddedEvent(cart.getAggregateId(), new Jewel("a"), 1));
+        assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(new JewelAddedEvent(cart.getAggregateId(), new Jewel("a"), SequenceNumber.initial().next()));
     }
 
     @Test
@@ -54,8 +54,8 @@ public class EventBusTest {
         eventBus.publish(cart.submit());
         //Then
         assertThat(eventStore.getEventsOfAggregate(cart.getAggregateId())).containsExactly(
-                new JewelAddedEvent(cart.getAggregateId(), new Jewel("a"), 1),
-                new CartSubmittedEvent(cart.getAggregateId(), 2)
+                new JewelAddedEvent(cart.getAggregateId(), new Jewel("a"), SequenceNumber.initial().next()),
+                new CartSubmittedEvent(cart.getAggregateId(), SequenceNumber.initial().next().next())
         );
     }
 
