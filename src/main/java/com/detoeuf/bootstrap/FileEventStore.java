@@ -21,7 +21,7 @@ public class FileEventStore implements EventStore {
     public FileEventStore(File repositoryDir) {
         this.repositoryDir = repositoryDir;
         mapper = new ObjectMapper();
-        mapper.enableDefaultTyping();
+        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         mapper.registerModule(new VavrModule());
     }
 
@@ -61,7 +61,7 @@ public class FileEventStore implements EventStore {
 
     private Event deserialize(String json) {
         try {
-            return mapper.readValue(json, JewelAddedEvent.class);
+            return mapper.readValue(json, Event.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
